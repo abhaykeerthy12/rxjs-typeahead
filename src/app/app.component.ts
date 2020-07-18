@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
       );
   }
 
-  onKeyUp(){
+  onKeyUp(event){
 	this.searchSubject.next(event.target.value);
   }
 
