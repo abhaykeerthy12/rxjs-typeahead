@@ -1,35 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import {
-  filter,
-  map,
   debounceTime,
   distinctUntilChanged,
+  filter,
+  map,
 } from "rxjs/operators";
 import { SearchService } from "./search.service";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   template: `
-   <h1>Typeahead search</h1>
+    <h1>Typeahead search</h1>
 
-   <div style="padding: 10px">
-   	<input type="text" placeholder="Search..." (keyup)="onKeyUp($event)" />
+    <div style="padding: 10px">
+      <input type="text" placeholder="Search..." (keyup)="onKeyUp($event)" />
 
-	<h3>Data</h3>
+      <h3>Data</h3>
 
-	<ng-container *ngIf="searchResults | async as results">
-		<div *ngFor="let data of results">
-		   <p> {{data.data}} </p>
-		   <p> {{data.unique}} </p>
-		</div>
-	</ng-container>
-   </div>
+      <ng-container *ngIf="searchResults | async as results">
+        <div *ngFor="let data of results">
+          {{ data.title }}
+        </div>
+      </ng-container>
+    </div>
   `,
-  styles: []
+  styles: [],
 })
 export class AppComponent implements OnInit {
-  title = 'rxjs-typeahead';
+  title = "rxjs-typeahead";
 
   // search subject
   searchSubject = new Subject<string>();
@@ -37,25 +36,22 @@ export class AppComponent implements OnInit {
   // search results
   searchResults: Observable<any[]>;
 
-  constructor(private _searchService: SearchService){}
+  constructor(private _searchService: SearchService) {}
 
-  ngOnInit(){
+  ngOnInit() {
+    this.searchResults = this._searchService.data$;
 
-      this.searchResults = this._searchService.data$;
-
-      this.search().subscribe((value) =>
-        this._searchService.search(value)
-      );
+    this.search().subscribe((value) => this._searchService.search(value));
   }
 
-  onKeyUp(event){
-	this.searchSubject.next(event.target.value);
+  onKeyUp(event) {
+    this.searchSubject.next(event.target.value);
   }
 
   // search when typing
-  // criteria should be above 3 chars   
+  // criteria should be above 3 chars
   // also add some delay and memoization
-  search() {
+  search(): Observable<string> {
     return this.searchSubject.pipe(
       filter((value) => !!value),
       filter((value) => value.length > 3),
@@ -64,5 +60,4 @@ export class AppComponent implements OnInit {
       distinctUntilChanged()
     );
   }
-
 }
