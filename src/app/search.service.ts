@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, from } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -10,14 +10,14 @@ export class SearchService {
   dataArray = new BehaviorSubject([]);
 
   // convert data to observable
-  data$ = from(this.dataArray);
+  data$ = this.dataArray.asObservable();
 
   constructor(private _http: HttpClient) {
     // fetch initial data from server
     this._http
       .get("https://jsonplaceholder.typicode.com/posts")
       .subscribe((value: any) => {
-        const newData = [...this.dataArray.getValue(), ...value];
+        const newData = [...value];
         return this.dataArray.next(newData);
       });
   }
